@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+import argparse
 
 def call_llm(prompt:str=""):
     from openai import OpenAI
@@ -35,7 +36,11 @@ def call_llm(prompt:str=""):
 def main():
     load_dotenv()
 
-    prompt = "Why is Boot.dev such a great place to learn backend development? Use one paragraph maximum."
+    parser = argparse.ArgumentParser(description="Chatbot")
+    parser.add_argument("user_prompt", type=str, help="User prompt")
+    args = parser.parse_args()
+
+    prompt = args.user_prompt
     call_llm(prompt)
 
 
