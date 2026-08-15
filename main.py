@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 import argparse
+from prompts import system_prompt
 
 def call_llm(prompt:str="", verbose:bool=False):
     from openai import OpenAI
@@ -13,10 +14,8 @@ def call_llm(prompt:str="", verbose:bool=False):
     )
 
     messages = [
-        {
-            "role": "user",
-            "content": prompt,
-        }
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": prompt},
     ]
 
     response = client.chat.completions.create(
