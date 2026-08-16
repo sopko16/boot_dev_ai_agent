@@ -1,5 +1,35 @@
 import os 
 
+schema_write_file = {
+    "type": "function",
+    "function": {
+        "name": "write_file",
+        "description": (
+            "Writes text content to a file inside the permitted working directory. "
+            "Creates the file if it does not exist and overwrites it if it already exists."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "file_path": {
+                    "type": "string",
+                    "description": (
+                        "Path to the file to write, relative to the working directory. "
+                        "Example: 'main.py' or 'pkg/new_file.py'."
+                    ),
+                },
+                "content": {
+                    "type": "string",
+                    "description": (
+                        "The text content to write to the file."
+                    ),
+                },
+            },
+            "required": ["file_path", "content"],
+        },
+    },
+}
+
 def write_file(working_directory: str, file_path: str, content: str) -> str:
 
     try:

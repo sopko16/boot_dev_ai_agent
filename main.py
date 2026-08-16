@@ -21,7 +21,10 @@ def call_llm(prompt:str="", verbose:bool=False):
     ]
 
     response = client.chat.completions.create(
-        model="openrouter/free",
+        # model="openrouter/free",
+        # model="nvidia/nemotron-3-ultra-550b-a55b:free",
+        # model="nvidia/nemotron-3-nano-30b-a3b:free",
+        model="nvidia/nemotron-3.5-lightning:free",
         messages= messages,
         tools=available_functions,
     )

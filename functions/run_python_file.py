@@ -1,6 +1,41 @@
 import os
 import subprocess
 
+schema_run_python_file = {
+    "type": "function",
+    "function": {
+        "name": "run_python_file",
+        "description": (
+            "Executes a Python file inside the permitted working directory. "
+            "Use this when the user asks to run, execute, or test a Python program. "
+            "Do not use this to list files or inspect directory contents."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "file_path": {
+                    "type": "string",
+                    "description": (
+                        "Path to the Python file to execute, relative to the "
+                        "working directory. Example: 'main.py' or 'pkg/calculator.py'."
+                    ),
+                },
+                "args": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                    },
+                    "description": (
+                        "Optional command-line arguments to pass to the Python file. "
+                        "Example: ['3 + 5']."
+                    ),
+                },
+            },
+            "required": ["file_path"],
+        },
+    },
+}
+
 def run_python_file(working_directory: str, file_path: str, args: list[str] | None = None) -> str:
     try:
         wd_abs_path =  os.path.abspath(working_directory)

@@ -1,6 +1,31 @@
 import os
 from config import MAX_CHARS
 
+schema_get_file_content = {
+    "type": "function",
+    "function": {
+        "name": "get_file_content",
+        "description": (
+            "Reads and returns the text contents of a file inside the permitted "
+            "working directory. Use this when the user asks to inspect, read, "
+            "or view a specific file."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "file_path": {
+                    "type": "string",
+                    "description": (
+                        "Path to the file to read, relative to the working directory. "
+                        "Example: 'main.py' or 'pkg/calculator.py'."
+                    ),
+                },
+            },
+            "required": ["file_path"],
+        },
+    },
+}
+
 def get_file_content(working_directory: str, file_path: str) -> str:
     try:
         wd_abs_path =  os.path.abspath(working_directory)
