@@ -19,11 +19,6 @@ def create_llm_client():
 
 def call_llm_once(client, messages, prompt:str="", verbose:bool=False):
 
-    # messages = [
-    #     {"role": "system", "content": system_prompt},
-    #     {"role": "user", "content": prompt},
-    # ]
-
     response = client.chat.completions.create(
         # model="openrouter/free",
         # model="nvidia/nemotron-3-ultra-550b-a55b:free",
@@ -58,9 +53,6 @@ def call_llm_once(client, messages, prompt:str="", verbose:bool=False):
 
 def run_chat_cli(client, messages: list[dict[str,str]] | None = None):
 
-    # load_dotenv()
-    # client = init_llm_client()
-
     parser = argparse.ArgumentParser(description="Chatbot")
     parser.add_argument("user_prompt", type=str, help="User prompt")
 
@@ -76,7 +68,6 @@ def run_chat_cli(client, messages: list[dict[str,str]] | None = None):
         {"role": "user", "content": prompt},
     ]
     
-
 
     call_llm_once(client, messages, prompt, args.verbose)
 
