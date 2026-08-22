@@ -5,20 +5,24 @@ import json
 from prompts import system_prompt
 from call_function import available_functions, call_function
 
-def call_llm(prompt:str="", verbose:bool=False):
+# TODO: MOVE THIS TO A CLASS:
+def create_llm_client():
     from openai import OpenAI
 
     api_key = os.environ.get("O_R_K")
 
-    client = OpenAI(
+    return OpenAI(
         base_url="https://openrouter.ai/api/v1",
         api_key=api_key,
     )
 
-    messages = [
-        {"role": "system", "content": system_prompt},
-        {"role": "user", "content": prompt},
-    ]
+
+def call_llm_once(client, messages, prompt:str="", verbose:bool=False):
+
+    # messages = [
+    #     {"role": "system", "content": system_prompt},
+    #     {"role": "user", "content": prompt},
+    # ]
 
     response = client.chat.completions.create(
         # model="openrouter/free",
@@ -52,9 +56,10 @@ def call_llm(prompt:str="", verbose:bool=False):
     else:
         print(message.content)
 
+def run_chat_cli(client, messages: list[dict[str,str]] | None = None):
 
-def main():
-    load_dotenv()
+    # load_dotenv()
+    # client = init_llm_client()
 
     parser = argparse.ArgumentParser(description="Chatbot")
     parser.add_argument("user_prompt", type=str, help="User prompt")
@@ -62,12 +67,33 @@ def main():
     parser.add_argument("--verbose", action="store_true", help="Enable verbose output")
 
     args = parser.parse_args()
-
     prompt = args.user_prompt
-    call_llm(prompt,args.verbose)
 
+
+    # Coming soon, if messages is passed in for agent conversation, use that instead.
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": prompt},
+    ]
+    
+
+
+    call_llm_once(client, messages, prompt, args.verbose)
+
+# def run_agent():
+
+
+
+def main_single_call():
+    
+    load_dotenv()
+    client = create_llm_client()
+
+    run_chat_cli(client)
+
+# def main_agent_call()
 
 
 
 if __name__ == "__main__":
-    main()
+    main_single_call()
