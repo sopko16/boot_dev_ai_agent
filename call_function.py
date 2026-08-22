@@ -38,7 +38,8 @@ def call_function(tool_call, verbose: bool = False) -> dict:
     if function_name in function_map:
 
         result = function_map[function_name](
-            working_directory="./calculator",
+            # working_directory="./calculator",
+            working_directory=".",
             **function_args,
         )
 

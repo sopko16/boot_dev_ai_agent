@@ -17,7 +17,7 @@ def create_llm_client():
     )
 
 
-def call_llm_once(client, messages, prompt:str="", verbose:bool=False):
+def call_llm_once(client, messages, verbose:bool=False):
 
     response = client.chat.completions.create(
         # model="openrouter/free",
@@ -34,57 +34,108 @@ def call_llm_once(client, messages, prompt:str="", verbose:bool=False):
         print(f"Prompt tokens: {response.usage.prompt_tokens}")
         print(f"Response tokens: {response.usage.completion_tokens}")
         print("Response:")
-    
-    message = response.choices[0].message
-    if message.tool_calls:
-        for tool_call in message.tool_calls:
-            # function_args = json.loads(tool_call.function.arguments or "{}")
-            # print(f"Calling function: {tool_call.function.name}({function_args})")
-            result_message = call_function(tool_call)
 
-            if not result_message["content"]:
-                raise Exception("Function call returned empty content")
+    return response.choices[0].message    
+    # message = response.choices[0].message
+    # if message.tool_calls:
+    #     for tool_call in message.tool_calls:
+    #         # function_args = json.loads(tool_call.function.arguments or "{}")
+    #         # print(f"Calling function: {tool_call.function.name}({function_args})")
+    #         result_message = call_function(tool_call)
+
+    #         if not result_message["content"]:
+    #             raise Exception("Function call returned empty content")
             
-            if verbose:
-                print(f"-> {result_message['content']}")
+    #         if verbose:
+    #             print(f"-> {result_message['content']}")
                 
-    else:
-        print(message.content)
+    # else:
+    #     print(message.content)
+    
+    # return message
 
-def run_chat_cli(client, messages: list[dict[str,str]] | None = None):
-
+def run_chat_cli(client):
     parser = argparse.ArgumentParser(description="Chatbot")
-    parser.add_argument("user_prompt", type=str, help="User prompt")
 
-    parser.add_argument("--verbose", action="store_true", help="Enable verbose output")
+    parser.add_argument(
+        "user_prompt",
+        type=str,
+        help="User prompt",
+    )
+
+    parser.add_argument(
+        "--verbose",
+        action="store_true",
+        help="Enable verbose output",
+    )
 
     args = parser.parse_args()
-    prompt = args.user_prompt
 
-
-    # Coming soon, if messages is passed in for agent conversation, use that instead.
     messages = [
         {"role": "system", "content": system_prompt},
-        {"role": "user", "content": prompt},
+        {"role": "user", "content": args.user_prompt},
     ]
-    
 
-    call_llm_once(client, messages, prompt, args.verbose)
+    if args.verbose:
+        print(f"User prompt: {args.user_prompt}")
 
-# def run_agent():
+    run_agent(
+        client,
+        messages,
+        verbose=args.verbose,
+    )
+
+def run_agent(client, messages, verbose:bool=False):
+    for _ in range(20):
+
+        message = call_llm_once(
+            client,
+            messages,
+            verbose,
+        )
+
+        # Assistant message must be added first
+        messages.append(message)
+
+        if message.tool_calls:
+            for tool_call in message.tool_calls:
+                result_message = call_function(
+                    tool_call,
+                    verbose=verbose,
+                )
+
+                if not result_message["content"]:
+                    raise Exception(
+                        "Function call returned empty content"
+                    )
+
+                # Then add each tool result
+                messages.append(result_message)
+
+                if verbose:
+                    print(f"-> {result_message['content']}")
+
+            # Go around loop again so model can see tool results
+            continue
+
+        # No tool calls means the model is finished
+        print("Final response:")
+        print(message.content)
+        return
+
+    print("Error: Maximum number of agent iterations reached.")
 
 
 
-def main_single_call():
-    
+def main():
     load_dotenv()
     client = create_llm_client()
-
     run_chat_cli(client)
-
-# def main_agent_call()
 
 
 
 if __name__ == "__main__":
-    main_single_call()
+
+    # main_single_call()
+    # main_agent_call()
+    main()
