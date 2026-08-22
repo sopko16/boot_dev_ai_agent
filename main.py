@@ -21,15 +21,15 @@ def call_llm_once(client, messages, verbose:bool=False):
 
     response = client.chat.completions.create(
         # model="openrouter/free",
-        # model="nvidia/nemotron-3-ultra-550b-a55b:free",
+        model="nvidia/nemotron-3-ultra-550b-a55b:free",
         # model="nvidia/nemotron-3-nano-30b-a3b:free",
-        model="nvidia/nemotron-3.5-lightning:free",
+        # model="nvidia/nemotron-3.5-lightning:free",
         messages= messages,
         tools=available_functions,
     )
 
     if verbose:
-        print(f"User prompt: {prompt}")
+        # print(f"User prompt: {prompt}")
         print("Model used:", response.model)
         print(f"Prompt tokens: {response.usage.prompt_tokens}")
         print(f"Response tokens: {response.usage.completion_tokens}")
